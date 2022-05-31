@@ -12,11 +12,13 @@ import { Feather } from '@expo/vector-icons'
 import api from '../../services/api'
 import CategoryItem from '../../components/CategoryItem'
 import { getFavorite, setFavorite } from '../Search/favorite'
+import FavoritePost from '../../components/FavoritePost'
 
 export default function Home() {
   const navigation = useNavigation()
 
   const [categories, setCategories] = useState([])
+  const [favCategory, setfavCategory] = useState([])
 
   useEffect(() => {
     async function loadData() {
@@ -26,9 +28,19 @@ export default function Home() {
     loadData()
   }, [])
 
+  useEffect(() => {
+    async function favorite() {
+      const response = await getFavorite()
+      setfavCategory(response)
+    }
+
+    favorite()
+  }, [])
+
   async function handleFavorite(id) {
     const response = await setFavorite(id)
 
+    setfavCategory(response)
     console.log(response)
     alert('Categoria adicionada aos favoritos')
   }
@@ -52,6 +64,20 @@ export default function Home() {
           <CategoryItem data={item} favorite={() => handleFavorite(item.id)} />
         )}
       />
+
+      <View style={styles.main}>
+        {favCategory.length > 0 && (
+          <FlatList
+            style={{ marginTop: 50, maxHeight: 100, paddingStart: 18 }}
+            contentContainerStyle={{ paddingEnd: 18 }}
+            data={favCategory}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={item => String(item.id)}
+            renderItem={({ item }) => <FavoritePost data={item} />}
+          />
+        )}
+      </View>
     </SafeAreaView>
   )
 }
@@ -80,5 +106,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 18,
     borderRadius: 8,
     zIndex: 9
+  },
+
+  main: {
+    backgroundColor: '#FFF',
+    flex: 1,
+    marginTop: -30
   }
 })
