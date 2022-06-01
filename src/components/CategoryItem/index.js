@@ -15,7 +15,7 @@ export default function CategoryItem({ data, favorite }) {
   return (
     <TouchableOpacity
       style={styles.container}
-      activeOpacity={0.8}
+      activeOpacity={0.7}
       onPress={handleNavigate}
       onLongPress={favorite}
     >
