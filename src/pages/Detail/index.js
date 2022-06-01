@@ -6,13 +6,16 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Share,
+  Modal
 } from 'react-native'
+
 import { useNavigation, useRoute } from '@react-navigation/native'
-
 import { Feather, Entypo } from '@expo/vector-icons'
-
 import api from '../../services/api'
+
+import LinkWeb from '../../components/LinkWeb'
 
 export default function Detail() {
   const route = useRoute()
@@ -20,6 +23,9 @@ export default function Detail() {
 
   const [post, setPost] = useState({})
   const [links, setLinks] = useState([])
+
+  const [modalVisible, setModalVisible] = useState(false)
+  const [openLink, setOpenLink] = useState({})
 
   useEffect(() => {
     async function getPost() {
@@ -32,6 +38,47 @@ export default function Detail() {
 
     getPost()
   }, [])
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleShare}>
+          <Entypo name="share" size={25} color="#fff" />
+        </TouchableOpacity>
+      )
+    })
+  }, [navigation, post])
+
+  async function handleShare() {
+    try {
+      const result = await Share.share({
+        message: `
+        Confere esse post: ${post?.attributes?.title}
+
+        ${post?.attributes?.description}
+
+        Vi la no App DevPost!
+        `
+      })
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log('ACTIVY TYPE')
+        } else {
+          console.log('Compartilhado ')
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Modal Fechado')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  function handleOpenLink(link) {
+    setModalVisible(true)
+    setOpenLink(link)
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -47,12 +94,23 @@ export default function Detail() {
         <Text style={styles.descripton}>{post?.attributes?.description} </Text>
         {links.length > 0 && <Text style={styles.subTitle}> Links</Text>}
         {links.map(link => (
-          <TouchableOpacity key={link.id} style={styles.link}>
-            <Feather name="link" size={20} color="#1E4687" />
+          <TouchableOpacity
+            key={link.id}
+            style={styles.link}
+            onPress={() => handleOpenLink(link)}
+          >
+            <Feather name="link" size={14} color="#1E4687" />
             <Text style={styles.linkText}>{link.name}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
+      <Modal animationType="slide" visible={modalVisible} transparent={true}>
+        <LinkWeb
+          link={openLink?.url}
+          title={openLink?.name}
+          closeModal={() => setModalVisible(false)}
+        />
+      </Modal>
     </SafeAreaView>
   )
 }
