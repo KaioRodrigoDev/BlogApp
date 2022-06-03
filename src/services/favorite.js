@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useEffect, useState } from 'react'
-import api from '../../services/api'
+import api from './api'
 
 export async function getFavorite() {
   const data = await AsyncStorage.getItem('@favCategory')

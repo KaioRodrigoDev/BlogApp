@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/native'
 import { Feather } from '@expo/vector-icons'
 import api from '../../services/api'
 import CategoryItem from '../../components/CategoryItem'
-import { getFavorite, setFavorite } from '../Search/favorite'
+import { getFavorite, setFavorite } from '../../services/favorite'
 import FavoritePost from '../../components/FavoritePost'
 import PostItem from '../../components/PostItem'
 

@@ -22,7 +22,7 @@ export default function CategoryItem({ data, favorite }) {
       <Image
         style={styles.icon}
         source={{
-          uri: `http://192.168.0.108:1337${data?.attributes?.icon?.data?.attributes?.url}`
+          uri: `http://10.0.0.8:1337${data?.attributes?.icon?.data?.attributes?.url}`
         }}
       />
       <Text style={styles.name}>{data?.attributes?.name}</Text>
